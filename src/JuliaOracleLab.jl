@@ -14,6 +14,23 @@ struct OracleBinding
     checker_repository::String
     boundary_id::String
     exactness::Symbol
+end
+
+const ALLOWED_EXACTNESS = Set((:exact, :interval, :numerical, :mixed))
+
+function validate_binding(binding::OracleBinding)::Bool
+    fields = (
+        binding.oracle_id,
+        binding.domain_repository,
+        binding.claim_id,
+        binding.checker_repository,
+        binding.boundary_id,
+    )
+    all(!isempty, fields) || return false
+    binding.exactness in ALLOWED_EXACTNESS || return false
+    return true
+end
+
 function canonical_bigint_bytes(value::Integer)::Vector{UInt8}
     sign_byte = value == 0 ? UInt8(0) : value > 0 ? UInt8(1) : UInt8(2)
     magnitude = abs(big(value))
@@ -31,23 +48,6 @@ function canonical_bigint_bytes(value::Integer)::Vector{UInt8}
     end
     append!(result, magnitude_bytes)
     return result
-end
-
-end
-
-const ALLOWED_EXACTNESS = Set((:exact, :interval, :numerical, :mixed))
-
-function validate_binding(binding::OracleBinding)::Bool
-    fields = (
-        binding.oracle_id,
-        binding.domain_repository,
-        binding.claim_id,
-        binding.checker_repository,
-        binding.boundary_id,
-    )
-    all(!isempty, fields) || return false
-    binding.exactness in ALLOWED_EXACTNESS || return false
-    return true
 end
 
 end
