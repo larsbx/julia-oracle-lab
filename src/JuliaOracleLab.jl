@@ -26,7 +26,7 @@ function validate_binding(binding::OracleBinding)::Bool
         binding.checker_repository,
         binding.boundary_id,
     )
-    all(!isempty, fields) || return false
+    all(value -> !isempty(value), fields) || return false
     binding.exactness in ALLOWED_EXACTNESS || return false
     return true
 end
