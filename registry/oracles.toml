@@ -1,0 +1,4 @@
+schema = "julia-oracle-registry/v1"
+
+# An oracle is added only after its domain claim, authoritative checker,
+# boundary identifier, exactness class, and reproducibility contract exist.
