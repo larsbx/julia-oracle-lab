@@ -1,0 +1,10 @@
+steps:
+  test:
+    image: julia:1.11
+    commands:
+      - julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+
+when:
+  event:
+    - push
+    - pull_request
