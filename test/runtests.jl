@@ -37,3 +37,42 @@ end
     encoded = canonical_bigint_bytes(big"256")
     @test bytes2hex(encoded) == "0100000000000000020100"
 end
+
+@testset "oracle comparison is explicit" begin
+    expected = canonical_bigint_bytes(big"-1000000001")
+    @test compare_bytes(copy(expected), expected) == agrees
+
+    corrupted = copy(expected)
+    corrupted[end] ⊻= 0x01
+    @test compare_bytes(corrupted, expected) == disagrees
+end
+
+@testset "registry entries fail closed" begin
+    entry = Dict{String, Any}(
+        "schema" => "julia-oracle-entry/v1",
+        "oracle_id" => "finite-integer.bigz.canonical-bytes",
+        "version" => "0.1.0",
+        "domain_repository" => "larsbx/finite-math-kernels",
+        "claim_id" => "bigz-canonical-bytes",
+        "checker_repository" => "larsbx/finite-math-kernels",
+        "boundary_id" => "shared-finite-kernel",
+        "exactness" => "exact",
+        "result_vocabulary" => ["agrees", "disagrees", "inconclusive", "oracle_error"],
+        "julia_compat" => "1.11",
+    )
+    @test validate_registry_entry(entry)
+
+    unknown_critical = copy(entry)
+    unknown_critical["acceptance_authority"] = true
+    @test !validate_registry_entry(unknown_critical)
+
+    missing_checker = copy(entry)
+    delete!(missing_checker, "checker_repository")
+    @test !validate_registry_entry(missing_checker)
+
+    expanded_vocabulary = copy(entry)
+    expanded_vocabulary["result_vocabulary"] = [
+        "agrees", "disagrees", "inconclusive", "oracle_error", "accepted",
+    ]
+    @test !validate_registry_entry(expanded_vocabulary)
+end
