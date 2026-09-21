@@ -1,8 +1,8 @@
 module JuliaOracleLab
 
 export OracleOutcome, agrees, disagrees, inconclusive, oracle_error
-export OracleBinding, validate_binding
-export canonical_bigint_bytes
+export OracleBinding, validate_binding, validate_registry_entry
+export canonical_bigint_bytes, compare_bytes
 
 @enum OracleOutcome agrees disagrees inconclusive oracle_error
 
@@ -17,6 +17,15 @@ struct OracleBinding
 end
 
 const ALLOWED_EXACTNESS = Set((:exact, :interval, :numerical, :mixed))
+const REQUIRED_REGISTRY_KEYS = Set((
+    "schema", "oracle_id", "version", "domain_repository", "claim_id",
+    "checker_repository", "boundary_id", "exactness", "result_vocabulary",
+    "julia_compat",
+))
+const OPTIONAL_REGISTRY_KEYS = Set(("manifest_digest",))
+const RESULT_VOCABULARY = [
+    "agrees", "disagrees", "inconclusive", "oracle_error",
+]
 
 function validate_binding(binding::OracleBinding)::Bool
     fields = (
@@ -28,6 +37,28 @@ function validate_binding(binding::OracleBinding)::Bool
     )
     all(value -> !isempty(value), fields) || return false
     binding.exactness in ALLOWED_EXACTNESS || return false
+    return true
+end
+
+function validate_registry_entry(entry::AbstractDict)::Bool
+    keys_as_strings = Set(string(key) for key in keys(entry))
+    REQUIRED_REGISTRY_KEYS ⊆ keys_as_strings || return false
+    keys_as_strings ⊆ union(REQUIRED_REGISTRY_KEYS, OPTIONAL_REGISTRY_KEYS) || return false
+
+    get(entry, "schema", nothing) == "julia-oracle-entry/v1" || return false
+    get(entry, "exactness", nothing) in string.(collect(ALLOWED_EXACTNESS)) || return false
+    get(entry, "result_vocabulary", nothing) == RESULT_VOCABULARY || return false
+
+    for key in ("oracle_id", "domain_repository", "claim_id", "checker_repository", "boundary_id", "julia_compat")
+        value = get(entry, key, nothing)
+        value isa AbstractString && !isempty(value) || return false
+    end
+
+    try
+        VersionNumber(get(entry, "version", ""))
+    catch
+        return false
+    end
     return true
 end
 
@@ -49,5 +80,8 @@ function canonical_bigint_bytes(value::Integer)::Vector{UInt8}
     append!(result, magnitude_bytes)
     return result
 end
+
+compare_bytes(actual::AbstractVector{UInt8}, expected::AbstractVector{UInt8})::OracleOutcome =
+    actual == expected ? agrees : disagrees
 
 end
