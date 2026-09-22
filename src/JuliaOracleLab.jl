@@ -3,6 +3,7 @@ module JuliaOracleLab
 export OracleOutcome, agrees, disagrees, inconclusive, oracle_error
 export OracleBinding, validate_binding, validate_registry_entry
 export canonical_bigint_bytes, compare_bytes
+export ExactArithmeticOracle
 
 @enum OracleOutcome agrees disagrees inconclusive oracle_error
 
@@ -83,5 +84,7 @@ end
 
 compare_bytes(actual::AbstractVector{UInt8}, expected::AbstractVector{UInt8})::OracleOutcome =
     actual == expected ? agrees : disagrees
+
+include("ExactArithmeticOracle.jl")
 
 end
