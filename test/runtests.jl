@@ -33,7 +33,6 @@ end
     @test bytes2hex(canonical_bigint_bytes(big"1")) == "01000000000000000101"
     @test bytes2hex(canonical_bigint_bytes(big"-1000000001")) == "0200000000000000043b9aca01"
 
-    # Minimal magnitude: no leading zero byte.
     encoded = canonical_bigint_bytes(big"256")
     @test bytes2hex(encoded) == "0100000000000000020100"
 end
@@ -75,4 +74,23 @@ end
         "agrees", "disagrees", "inconclusive", "oracle_error", "accepted",
     ]
     @test !validate_registry_entry(expanded_vocabulary)
+end
+
+@testset "exact arithmetic transcript oracle" begin
+    oracle = JuliaOracleLab.ExactArithmeticOracle
+    @test oracle.encode_z_token(big"0") == "0.0.0.0.0.0.0.0.0"
+    @test oracle.encode_z_token(big"-1000000001") ==
+        "2.0.0.0.0.0.0.0.4.59.154.202.1"
+    @test oracle.encode_q_token(big"-2" // big"4") ==
+        "2.0.0.0.0.0.0.0.1.1.1.0.0.0.0.0.0.0.1.2"
+
+    transcript = oracle.expected_lines()
+    @test length(transcript) == 1 + oracle.Z_CASES + oracle.Q_CASES + 1
+    @test isempty(oracle.compare_transcript(transcript))
+
+    corrupted = copy(transcript)
+    tokens = split(corrupted[2])
+    tokens[5] = "0.0.0.0.0.0.0.0.0"
+    corrupted[2] = join(tokens, " ")
+    @test !isempty(oracle.compare_transcript(corrupted))
 end
