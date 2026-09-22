@@ -79,8 +79,12 @@ function expected_lines()::Vector{String}
     ]
     for index in 0:(Z_CASES - 1)
         a, b = random_integer!(rng), random_integer!(rng)
-        quotient = b == 0 ? ("rejected", "rejected") :
-            let q, r = divrem(a, b); (encode_z_token(q), encode_z_token(r)) end
+        quotient = if b == 0
+            ("rejected", "rejected")
+        else
+            quotient_value, remainder_value = divrem(a, b)
+            (encode_z_token(quotient_value), encode_z_token(remainder_value))
+        end
         push!(lines, join((
             "Z", string(index), encode_z_token(a), encode_z_token(b),
             encode_z_token(a + b), encode_z_token(a - b), encode_z_token(a * b),
