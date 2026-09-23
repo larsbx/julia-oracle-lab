@@ -6,6 +6,13 @@ The lab provides reusable exact/numerical research infrastructure, reproducibili
 
 Julia may return only `agrees`, `disagrees`, `inconclusive`, or `oracle_error`. It does not prove claims, accept certificates, authorize effects, or control deployments.
 
+## Active research integrations
+
+- **PSC Tier 2 Growth Bridge:** `docs/GROWTH_BRIDGE_LOOP_GAIN_ORACLE.md`
+  specifies an independent exact oracle for cycle bases, loop gains, and the
+  generated arithmetic module of a recurrent packet component. PSC remains the
+  domain owner and Mojo remains authoritative.
+
 ## Install from Git
 
 The package is currently available directly from its public repository:
