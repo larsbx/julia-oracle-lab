@@ -1,4 +1,9 @@
 steps:
+  estate-audit:
+    image: python:3.12-slim
+    commands:
+      - python tools/audit_estate_layout.py
+
   test:
     image: julia:1.11
     commands:
