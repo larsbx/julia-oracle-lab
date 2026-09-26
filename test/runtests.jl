@@ -94,3 +94,18 @@ end
     corrupted[2] = join(tokens, " ")
     @test !isempty(oracle.compare_transcript(corrupted))
 end
+
+
+@testset "exact quadratic parabolic-index oracle" begin
+    oracle = JuliaOracleLab.ParabolicIndexOracle
+    for (lambda, q, expected) in oracle.low_q_fixtures()
+        @test oracle.parabolic_index(lambda, q) == expected
+        @test oracle.compare_fixture(lambda, q, expected) == agrees
+    end
+
+    wrong = oracle.low_q_fixtures()[3]
+    @test oracle.compare_fixture(wrong[1], wrong[2], zero(oracle.GQ)) == disagrees
+
+    nonroot = Complex{Rational{BigInt}}(big(1)//big(2), big(0)//big(1))
+    @test oracle.compare_fixture(nonroot, 4, zero(oracle.GQ)) == oracle_error
+end
