@@ -67,8 +67,9 @@ function rref(matrix::Matrix{Q})
         found === nothing && continue
         row = found::Int
         if row != pivot_row
-            out[pivot_row, :], out[row, :] =
-                copy(out[row, :]), copy(out[pivot_row, :])
+            saved = copy(out[pivot_row, :])
+            out[pivot_row, :] = out[row, :]
+            out[row, :] = saved
         end
         pivot = out[pivot_row, column]
         out[pivot_row, :] ./= pivot
