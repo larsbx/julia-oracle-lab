@@ -3,7 +3,7 @@ module JuliaOracleLab
 export OracleOutcome, agrees, disagrees, inconclusive, oracle_error
 export OracleBinding, validate_binding, validate_registry_entry
 export canonical_bigint_bytes, compare_bytes
-export ExactArithmeticOracle, ParabolicIndexOracle
+export ExactArithmeticOracle, ParabolicIndexOracle, LoopGainOracle
 
 @enum OracleOutcome agrees disagrees inconclusive oracle_error
 
@@ -88,5 +88,6 @@ compare_bytes(actual::AbstractVector{UInt8}, expected::AbstractVector{UInt8})::O
 # Oracles live in their own authority plane (ESTATE.toml): oracles/<domain>/.
 include(joinpath("..", "oracles", "finite_exact", "ExactArithmeticOracle.jl"))
 include(joinpath("..", "oracles", "quadratic_dynamics", "ParabolicIndexOracle.jl"))
+include(joinpath("..", "oracles", "pisot_substitutions", "LoopGainOracle.jl"))
 
 end
