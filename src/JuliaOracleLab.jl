@@ -85,8 +85,9 @@ end
 compare_bytes(actual::AbstractVector{UInt8}, expected::AbstractVector{UInt8})::OracleOutcome =
     actual == expected ? agrees : disagrees
 
-include("ExactArithmeticOracle.jl")
-include("ParabolicIndexOracle.jl")
-include("LoopGainOracle.jl")
+# Oracles live in their own authority plane (ESTATE.toml): oracles/<domain>/.
+include(joinpath("..", "oracles", "finite_exact", "ExactArithmeticOracle.jl"))
+include(joinpath("..", "oracles", "quadratic_dynamics", "ParabolicIndexOracle.jl"))
+include(joinpath("..", "oracles", "pisot_substitutions", "LoopGainOracle.jl"))
 
 end
