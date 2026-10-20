@@ -87,12 +87,12 @@ required = true
 current = ["docs", "README.md", "ROADMAP.md", "CHANGELOG.md", "ARCHITECTURE.md"]
 
 [[language]]
-# Julia is canonical for the lab's own kernel (registry and binding validation)
-# only. The lab sits outside every acceptance boundary: docs/AUTHORITY_BOUNDARY.md.
+# Julia is canonical for the lab's kernel, which owns one acceptance boundary:
+# registry admission. Oracle results stay evidence: docs/AUTHORITY_BOUNDARY.md.
 name = "Julia"
 authority = "canonical"
 roles = ["kernel", "oracle", "experiment"]
-acceptance_authority = false
+acceptance_authority = true
 
 [migration]
 mode = "boundary_first"

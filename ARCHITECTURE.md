@@ -15,10 +15,13 @@ The ordering rule is:
 authority -> mathematical/domain concern -> implementation language
 ```
 
-Julia is canonical only for the lab's own registry and binding validation
-(`src/JuliaOracleLab.jl`). Every oracle is non-authoritative: it may return
-`agrees`, `disagrees`, `inconclusive`, or `oracle_error`, never an acceptance
-verdict (`docs/AUTHORITY_BOUNDARY.md`).
+Julia is canonical for the lab's one acceptance boundary, **registry
+admission**: `validate_registry_entry` and `validate_binding` in
+`src/JuliaOracleLab.jl` are its single implementation and accept or reject
+oracle registry entries and bindings, failing closed. Every oracle *result*
+stays non-authoritative: it may return `agrees`, `disagrees`, `inconclusive`,
+or `oracle_error` about another repository's claim, never an acceptance
+verdict on it (`docs/AUTHORITY_BOUNDARY.md`).
 
 Oracles live under `oracles/<domain>/`, outside the package's `src/`, which
 holds only the kernel; `src/JuliaOracleLab.jl` includes them from there.
